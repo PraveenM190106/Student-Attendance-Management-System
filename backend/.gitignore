@@ -1,0 +1,13 @@
+# Maven Target Output
+target/
+
+# IDE Files
+.idea/
+*.iml
+.classpath
+.project
+.settings/
+
+# Environment and Logs
+.env
+*.log
