@@ -1,23 +1,25 @@
 import React from 'react';
 import { Navigate } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
 
-export const ProtectedRoute = ({ children }) => {
-  const { user, loading } = useAuth();
-
-  if (loading) {
-    return (
-      <div style={{ display: 'flex', height: '100vh', alignItems: 'center', justifyContent: 'center' }}>
-        <div style={{ fontSize: '18px', fontWeight: 600, color: 'var(--primary-500)' }}>
-          Loading Attendance System...
-        </div>
-      </div>
-    );
+export const ProtectedRoute = ({ children, allowedRole }) => {
+  const userStr = localStorage.getItem('user');
+  if (!userStr) {
+    return <Navigate to="/" replace />;
   }
 
-  if (!user) {
-    return <Navigate to="/login" replace />;
-  }
+  try {
+    const user = JSON.parse(userStr);
+    if (!user || !user.token) {
+      return <Navigate to="/" replace />;
+    }
 
-  return children;
+    if (allowedRole && String(user.role).toUpperCase() !== allowedRole.toUpperCase()) {
+      return <Navigate to="/" replace />;
+    }
+
+    return children;
+  } catch (e) {
+    localStorage.removeItem('user');
+    return <Navigate to="/" replace />;
+  }
 };

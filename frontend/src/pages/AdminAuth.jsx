@@ -20,7 +20,7 @@ const AdminAuth = () => {
         password
       });
 
-      if (res.role !== 'ROLE_ADMIN') {
+      if (!res || typeof res !== 'object' || String(res.role).toUpperCase() !== 'ROLE_ADMIN') {
         setError('Unauthorized. Only the System Administrator can log in here.');
         setLoading(false);
         return;

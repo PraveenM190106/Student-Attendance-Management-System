@@ -7,6 +7,8 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
+import java.util.Optional;
+
 @Component
 public class DataInitializer implements CommandLineRunner {
 
@@ -19,7 +21,9 @@ public class DataInitializer implements CommandLineRunner {
     @Override
     public void run(String... args) throws Exception {
         String adminEmail = "praveenbeece098@gmail.com";
-        if (!userRepository.existsByEmail(adminEmail)) {
+        Optional<User> adminOpt = userRepository.findByEmail(adminEmail);
+
+        if (adminOpt.isEmpty()) {
             User admin = User.builder()
                     .email(adminEmail)
                     .password(passwordEncoder.encode("Praveen2006@"))
@@ -29,6 +33,12 @@ public class DataInitializer implements CommandLineRunner {
                     .build();
             userRepository.save(admin);
             System.out.println(">>> Predefined Admin Account Initialized: " + adminEmail);
+        } else {
+            User admin = adminOpt.get();
+            admin.setRole("ROLE_ADMIN");
+            admin.setStatus("APPROVED");
+            userRepository.save(admin);
+            System.out.println(">>> Predefined Admin Account Verified & Approved: " + adminEmail);
         }
     }
 }

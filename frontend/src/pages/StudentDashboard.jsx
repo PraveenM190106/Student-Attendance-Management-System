@@ -72,7 +72,7 @@ const StudentDashboard = () => {
       return;
     }
     const user = JSON.parse(userStr);
-    if (user.role !== "ROLE_STUDENT") {
+    if (!user || String(user.role).toUpperCase() !== "ROLE_STUDENT") {
       navigate("/student-auth");
       return;
     }

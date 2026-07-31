@@ -64,7 +64,7 @@ const DeptDashboard = () => {
       return;
     }
     const user = JSON.parse(userStr);
-    if (user.role !== 'ROLE_DEPARTMENT') {
+    if (!user || String(user.role).toUpperCase() !== 'ROLE_DEPARTMENT') {
       navigate('/dept-auth');
       return;
     }

@@ -8,11 +8,13 @@ export const authService = {
         password: password,
       });
 
-      if (res.data) {
-        localStorage.setItem("user", JSON.stringify(res.data));
+      const userData = res && res.data ? res.data : res;
+
+      if (userData) {
+        localStorage.setItem("user", JSON.stringify(userData));
       }
 
-      return res.data;
+      return userData;
     } catch (err) {
       console.error("Login Error:", err.response?.data || err.message);
       throw err;

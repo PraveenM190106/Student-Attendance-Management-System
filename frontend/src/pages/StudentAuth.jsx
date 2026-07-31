@@ -47,7 +47,7 @@ const StudentAuth = () => {
         password: loginPassword
       });
 
-      if (res.role !== 'ROLE_STUDENT') {
+      if (!res || typeof res !== 'object' || String(res.role).toUpperCase() !== 'ROLE_STUDENT') {
         setError('This email is registered under a non-student role. Please use the appropriate portal.');
         setLoading(false);
         return;

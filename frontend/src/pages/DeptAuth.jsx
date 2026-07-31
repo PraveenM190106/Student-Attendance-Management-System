@@ -33,7 +33,7 @@ const DeptAuth = () => {
         password: loginPassword
       });
 
-      if (res.role !== 'ROLE_DEPARTMENT') {
+      if (!res || typeof res !== 'object' || String(res.role).toUpperCase() !== 'ROLE_DEPARTMENT') {
         setError('This account is registered under a different role. Please use the correct portal.');
         setLoading(false);
         return;

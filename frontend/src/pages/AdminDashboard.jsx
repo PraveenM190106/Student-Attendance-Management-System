@@ -31,7 +31,7 @@ const AdminDashboard = () => {
       return;
     }
     const user = JSON.parse(userStr);
-    if (user.role !== 'ROLE_ADMIN') {
+    if (!user || String(user.role).toUpperCase() !== 'ROLE_ADMIN') {
       navigate('/admin-auth');
       return;
     }

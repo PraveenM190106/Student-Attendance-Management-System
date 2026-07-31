@@ -11,7 +11,6 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/announcements")
-@CrossOrigin(origins = "*")
 public class AnnouncementController {
 
     @Autowired

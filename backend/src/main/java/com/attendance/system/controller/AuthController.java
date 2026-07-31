@@ -4,6 +4,7 @@ import com.attendance.system.dto.*;
 import com.attendance.system.entity.User;
 import com.attendance.system.repository.UserRepository;
 import com.attendance.system.security.JwtUtils;
+import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,7 +16,7 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/auth")
-@CrossOrigin(origins = "*")
+@AllArgsConstructor
 public class AuthController {
 
     @Autowired

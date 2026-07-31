@@ -7,6 +7,7 @@ import AdminAuth from '../pages/AdminAuth';
 import AdminDashboard from '../pages/AdminDashboard';
 import StudentDashboard from '../pages/StudentDashboard';
 import DeptDashboard from '../pages/DeptDashboard';
+import { ProtectedRoute } from './ProtectedRoute';
 
 export const AppRoutes = () => {
   return (
@@ -16,9 +17,30 @@ export const AppRoutes = () => {
       <Route path="/dept-auth" element={<DeptAuth />} />
       <Route path="/admin-auth" element={<AdminAuth />} />
 
-      <Route path="/admin-dashboard" element={<AdminDashboard />} />
-      <Route path="/student-dashboard" element={<StudentDashboard />} />
-      <Route path="/dept-dashboard" element={<DeptDashboard />} />
+      <Route 
+        path="/admin-dashboard" 
+        element={
+          <ProtectedRoute allowedRole="ROLE_ADMIN">
+            <AdminDashboard />
+          </ProtectedRoute>
+        } 
+      />
+      <Route 
+        path="/student-dashboard" 
+        element={
+          <ProtectedRoute allowedRole="ROLE_STUDENT">
+            <StudentDashboard />
+          </ProtectedRoute>
+        } 
+      />
+      <Route 
+        path="/dept-dashboard" 
+        element={
+          <ProtectedRoute allowedRole="ROLE_DEPARTMENT">
+            <DeptDashboard />
+          </ProtectedRoute>
+        } 
+      />
 
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
