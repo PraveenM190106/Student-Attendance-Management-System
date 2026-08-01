@@ -19,10 +19,10 @@ const StudentAuth = () => {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [profileImage, setProfileImage] = useState('');
   
-  // UI Messages
   const [error, setError] = useState('');
   const [successMsg, setSuccessMsg] = useState('');
   const [loading, setLoading] = useState(false);
+  const [coldStartNotice, setColdStartNotice] = useState(false);
 
   const handleImageUpload = (e) => {
     const file = e.target.files[0];
@@ -40,6 +40,9 @@ const StudentAuth = () => {
     setError('');
     setSuccessMsg('');
     setLoading(true);
+    setColdStartNotice(false);
+
+    const timer = setTimeout(() => setColdStartNotice(true), 2200);
 
     try {
       const res = await api.post('/auth/login', {
@@ -47,6 +50,7 @@ const StudentAuth = () => {
         password: loginPassword
       });
 
+      clearTimeout(timer);
       if (!res || typeof res !== 'object' || String(res.role).toUpperCase() !== 'ROLE_STUDENT') {
         setError('This email is registered under a non-student role. Please use the appropriate portal.');
         setLoading(false);
@@ -56,9 +60,12 @@ const StudentAuth = () => {
       localStorage.setItem('user', JSON.stringify(res));
       navigate('/student-dashboard');
     } catch (err) {
+      clearTimeout(timer);
       setError(err.message || 'Login failed. Please check credentials or approval status.');
     } finally {
+      clearTimeout(timer);
       setLoading(false);
+      setColdStartNotice(false);
     }
   };
 
@@ -78,6 +85,8 @@ const StudentAuth = () => {
     }
 
     setLoading(true);
+    setColdStartNotice(false);
+    const timer = setTimeout(() => setColdStartNotice(true), 2200);
 
     try {
       const res = await api.post('/auth/register/student', {
@@ -90,13 +99,17 @@ const StudentAuth = () => {
         profileImage
       });
 
+      clearTimeout(timer);
       setSuccessMsg(res.message || 'Registration successful! Your account status is PENDING admin approval.');
       setActiveTab('login');
       setLoginEmail(email);
     } catch (err) {
+      clearTimeout(timer);
       setError(err.message || 'Registration failed.');
     } finally {
+      clearTimeout(timer);
       setLoading(false);
+      setColdStartNotice(false);
     }
   };
 
@@ -147,6 +160,13 @@ const StudentAuth = () => {
             Register Account
           </button>
         </div>
+
+        {coldStartNotice && (
+          <div style={{ padding: "10px 14px", borderRadius: "8px", background: "rgba(245, 158, 11, 0.15)", border: "1px solid rgba(245, 158, 11, 0.3)", color: "#d97706", fontSize: "13px", marginBottom: "20px", display: "flex", alignItems: "center", gap: "8px" }}>
+            <span>⚡</span>
+            <span>Connecting to cloud server... Waking up service, please wait a moment.</span>
+          </div>
+        )}
 
         {error && (
           <div

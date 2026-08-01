@@ -20,12 +20,16 @@ const DeptAuth = () => {
   const [error, setError] = useState('');
   const [successMsg, setSuccessMsg] = useState('');
   const [loading, setLoading] = useState(false);
+  const [coldStartNotice, setColdStartNotice] = useState(false);
 
   const handleLogin = async (e) => {
     e.preventDefault();
     setError('');
     setSuccessMsg('');
     setLoading(true);
+    setColdStartNotice(false);
+
+    const timer = setTimeout(() => setColdStartNotice(true), 2200);
 
     try {
       const res = await api.post('/auth/login', {
@@ -33,6 +37,7 @@ const DeptAuth = () => {
         password: loginPassword
       });
 
+      clearTimeout(timer);
       if (!res || typeof res !== 'object' || String(res.role).toUpperCase() !== 'ROLE_DEPARTMENT') {
         setError('This account is registered under a different role. Please use the correct portal.');
         setLoading(false);
@@ -42,9 +47,12 @@ const DeptAuth = () => {
       localStorage.setItem('user', JSON.stringify(res));
       navigate('/dept-dashboard');
     } catch (err) {
+      clearTimeout(timer);
       setError(err.message || 'Login failed. Please check credentials or approval status.');
     } finally {
+      clearTimeout(timer);
       setLoading(false);
+      setColdStartNotice(false);
     }
   };
 
@@ -53,6 +61,9 @@ const DeptAuth = () => {
     setError('');
     setSuccessMsg('');
     setLoading(true);
+    setColdStartNotice(false);
+
+    const timer = setTimeout(() => setColdStartNotice(true), 2200);
 
     try {
       const res = await api.post('/auth/register/department', {
@@ -63,13 +74,17 @@ const DeptAuth = () => {
         password
       });
 
+      clearTimeout(timer);
       setSuccessMsg(res.message || 'Department staff registered successfully! Account is PENDING admin approval.');
       setActiveTab('login');
       setLoginEmail(email);
     } catch (err) {
+      clearTimeout(timer);
       setError(err.message || 'Registration failed.');
     } finally {
+      clearTimeout(timer);
       setLoading(false);
+      setColdStartNotice(false);
     }
   };
 
@@ -100,6 +115,13 @@ const DeptAuth = () => {
             Register Staff
           </button>
         </div>
+
+        {coldStartNotice && (
+          <div style={{ padding: '10px 14px', borderRadius: '8px', background: 'rgba(245, 158, 11, 0.15)', border: '1px solid rgba(245, 158, 11, 0.3)', color: '#d97706', fontSize: '13px', marginBottom: '20px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <span>⚡</span>
+            <span>Connecting to cloud server... Waking up service, please wait a moment.</span>
+          </div>
+        )}
 
         {error && (
           <div style={{ padding: '12px', borderRadius: '8px', background: 'rgba(244, 63, 94, 0.15)', color: '#f43f5e', fontSize: '13px', marginBottom: '20px' }}>

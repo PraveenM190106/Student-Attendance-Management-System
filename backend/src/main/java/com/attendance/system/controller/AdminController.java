@@ -64,7 +64,7 @@ public class AdminController {
     }
 
     @PostMapping("/users/{id}/approve")
-    public ResponseEntity<?> approveUser(@PathVariable Long id) {
+    public ResponseEntity<?> approveUser(@PathVariable("id") Long id) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("User not found"));
         user.setStatus("APPROVED");
@@ -73,7 +73,7 @@ public class AdminController {
     }
 
     @PostMapping("/users/{id}/reject")
-    public ResponseEntity<?> rejectUser(@PathVariable Long id) {
+    public ResponseEntity<?> rejectUser(@PathVariable("id") Long id) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("User not found"));
         user.setStatus("REJECTED");
@@ -82,7 +82,7 @@ public class AdminController {
     }
 
     @PutMapping("/users/{id}")
-    public ResponseEntity<?> updateUser(@PathVariable Long id, @RequestBody UpdateUserRequest request) {
+    public ResponseEntity<?> updateUser(@PathVariable("id") Long id, @RequestBody UpdateUserRequest request) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("User not found"));
         if (request.getFullName() != null) user.setFullName(request.getFullName());
@@ -96,7 +96,7 @@ public class AdminController {
     }
 
     @DeleteMapping("/users/{id}")
-    public ResponseEntity<?> deleteUser(@PathVariable Long id) {
+    public ResponseEntity<?> deleteUser(@PathVariable("id") Long id) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("User not found"));
         if ("ROLE_ADMIN".equals(user.getRole())) {

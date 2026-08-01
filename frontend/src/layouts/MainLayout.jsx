@@ -8,6 +8,7 @@ export const MainLayout = () => {
 
   return (
     <div className="app-container">
+      <div className={`sidebar-backdrop ${sidebarOpen ? 'active' : ''}`} onClick={() => setSidebarOpen(false)} />
       <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
       <div className="main-wrapper">
         <Navbar onToggleSidebar={() => setSidebarOpen(!sidebarOpen)} />

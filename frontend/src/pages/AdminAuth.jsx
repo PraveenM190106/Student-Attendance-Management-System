@@ -8,11 +8,17 @@ const AdminAuth = () => {
   const [password, setPassword] = useState('Praveen2006@');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [coldStartNotice, setColdStartNotice] = useState(false);
 
   const handleAdminLogin = async (e) => {
     e.preventDefault();
     setError('');
     setLoading(true);
+    setColdStartNotice(false);
+
+    const timer = setTimeout(() => {
+      setColdStartNotice(true);
+    }, 2200);
 
     try {
       const res = await api.post('/auth/login', {
@@ -20,6 +26,7 @@ const AdminAuth = () => {
         password
       });
 
+      clearTimeout(timer);
       if (!res || typeof res !== 'object' || String(res.role).toUpperCase() !== 'ROLE_ADMIN') {
         setError('Unauthorized. Only the System Administrator can log in here.');
         setLoading(false);
@@ -29,9 +36,12 @@ const AdminAuth = () => {
       localStorage.setItem('user', JSON.stringify(res));
       navigate('/admin-dashboard');
     } catch (err) {
+      clearTimeout(timer);
       setError(err.message || 'Admin authentication failed.');
     } finally {
+      clearTimeout(timer);
       setLoading(false);
+      setColdStartNotice(false);
     }
   };
 
@@ -45,6 +55,13 @@ const AdminAuth = () => {
             System Administrator Authentication
           </p>
         </div>
+
+        {coldStartNotice && (
+          <div style={{ padding: '10px 14px', borderRadius: '8px', background: 'rgba(245, 158, 11, 0.15)', border: '1px solid rgba(245, 158, 11, 0.3)', color: '#d97706', fontSize: '13px', marginBottom: '20px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <span>⚡</span>
+            <span>Connecting to cloud server... Waking up service, please wait a moment.</span>
+          </div>
+        )}
 
         {error && (
           <div style={{ padding: '12px', borderRadius: '8px', background: 'rgba(244, 63, 94, 0.15)', color: '#f43f5e', fontSize: '13px', marginBottom: '20px' }}>

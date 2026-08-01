@@ -62,4 +62,12 @@ api.interceptors.response.use(
   }
 );
 
+export const warmUpBackend = async () => {
+  try {
+    await api.get('/auth/health');
+  } catch (err) {
+    // Silent fail for initial warm-up ping
+  }
+};
+
 export default api;

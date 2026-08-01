@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
+import { Menu, X } from "lucide-react";
 import api from "../services/api";
 import { AttendanceDonutChart } from "../components/AttendanceChart";
 
@@ -7,6 +8,7 @@ const StudentDashboard = () => {
   const navigate = useNavigate();
   const [student, setStudent] = useState(null);
   const [activeTab, setActiveTab] = useState("attendance"); // 'attendance', 'assignments', 'analytics', 'chat', 'notifications', 'leave'
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   // Active Session & Timer State
   const [sessionInfo, setSessionInfo] = useState({
@@ -388,20 +390,33 @@ const StudentDashboard = () => {
 
   return (
     <div className="app-container">
+      {/* Mobile Backdrop Overlay */}
+      <div 
+        className={`sidebar-backdrop ${sidebarOpen ? 'active' : ''}`}
+        onClick={() => setSidebarOpen(false)} 
+      />
+
       {/* Sidebar */}
-      <div className="sidebar">
+      <div className={`sidebar ${sidebarOpen ? 'open' : ''}`}>
         <div className="sidebar-header">
           <div className="sidebar-logo-icon">👨‍🎓</div>
           <div className="sidebar-brand">
             Student Portal
             <span>{student?.department || "Student"}</span>
           </div>
+          <button 
+            className="sidebar-close-btn" 
+            onClick={() => setSidebarOpen(false)} 
+            aria-label="Close Menu"
+          >
+            <X size={20} />
+          </button>
         </div>
 
         <div className="sidebar-menu">
           <button
             className={`sidebar-link ${activeTab === "attendance" ? "active" : ""}`}
-            onClick={() => setActiveTab("attendance")}
+            onClick={() => { setActiveTab("attendance"); setSidebarOpen(false); }}
             style={{
               background: "none",
               border: "none",
@@ -414,7 +429,7 @@ const StudentDashboard = () => {
           </button>
           <button
             className={`sidebar-link ${activeTab === "assignments" ? "active" : ""}`}
-            onClick={() => setActiveTab("assignments")}
+            onClick={() => { setActiveTab("assignments"); setSidebarOpen(false); }}
             style={{
               background: "none",
               border: "none",
@@ -427,7 +442,7 @@ const StudentDashboard = () => {
           </button>
           <button
             className={`sidebar-link ${activeTab === "analytics" ? "active" : ""}`}
-            onClick={() => setActiveTab("analytics")}
+            onClick={() => { setActiveTab("analytics"); setSidebarOpen(false); }}
             style={{
               background: "none",
               border: "none",
@@ -440,7 +455,7 @@ const StudentDashboard = () => {
           </button>
           <button
             className={`sidebar-link ${activeTab === "career" ? "active" : ""}`}
-            onClick={() => setActiveTab("career")}
+            onClick={() => { setActiveTab("career"); setSidebarOpen(false); }}
             style={{
               background: "none",
               border: "none",
@@ -453,7 +468,7 @@ const StudentDashboard = () => {
           </button>
           <button
             className={`sidebar-link ${activeTab === "notifications" ? "active" : ""}`}
-            onClick={() => setActiveTab("notifications")}
+            onClick={() => { setActiveTab("notifications"); setSidebarOpen(false); }}
             style={{
               background: "none",
               border: "none",
@@ -466,7 +481,7 @@ const StudentDashboard = () => {
           </button>
           <button
             className={`sidebar-link ${activeTab === "leave" ? "active" : ""}`}
-            onClick={() => setActiveTab("leave")}
+            onClick={() => { setActiveTab("leave"); setSidebarOpen(false); }}
             style={{
               background: "none",
               border: "none",
@@ -483,7 +498,7 @@ const StudentDashboard = () => {
           <button
             className="btn btn-danger"
             style={{ width: "100%" }}
-            onClick={handleLogout}
+            onClick={() => { setSidebarOpen(false); handleLogout(); }}
           >
             Logout Student
           </button>
@@ -494,6 +509,13 @@ const StudentDashboard = () => {
       <div className="main-wrapper">
         <div className="navbar">
           <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+            <button 
+              className="hamburger-btn" 
+              onClick={() => setSidebarOpen(!sidebarOpen)} 
+              aria-label="Toggle Menu"
+            >
+              <Menu size={22} />
+            </button>
             {student?.profileImage && (
               <img
                 src={student.profileImage}

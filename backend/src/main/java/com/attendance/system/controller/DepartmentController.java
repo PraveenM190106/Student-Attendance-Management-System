@@ -35,17 +35,17 @@ public class DepartmentController {
     private WeeklyAttendanceHistoryRepository weeklyAttendanceHistoryRepository;
 
     @GetMapping("/students")
-    public ResponseEntity<List<User>> getDepartmentStudents(@RequestParam String department) {
+    public ResponseEntity<List<User>> getDepartmentStudents(@RequestParam("department") String department) {
         return ResponseEntity.ok(userRepository.findByDepartmentAndRoleAndStatus(department, "ROLE_STUDENT", "APPROVED"));
     }
 
     @GetMapping("/pending-students")
-    public ResponseEntity<List<User>> getDepartmentPendingStudents(@RequestParam String department) {
+    public ResponseEntity<List<User>> getDepartmentPendingStudents(@RequestParam("department") String department) {
         return ResponseEntity.ok(userRepository.findByDepartmentAndRoleAndStatus(department, "ROLE_STUDENT", "PENDING"));
     }
 
     @PostMapping("/students/{id}/approve")
-    public ResponseEntity<?> approveStudent(@PathVariable Long id) {
+    public ResponseEntity<?> approveStudent(@PathVariable("id") Long id) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Student not found"));
         if (!"ROLE_STUDENT".equals(user.getRole())) {
@@ -57,7 +57,7 @@ public class DepartmentController {
     }
 
     @PostMapping("/students/{id}/reject")
-    public ResponseEntity<?> rejectStudent(@PathVariable Long id) {
+    public ResponseEntity<?> rejectStudent(@PathVariable("id") Long id) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Student not found"));
         if (!"ROLE_STUDENT".equals(user.getRole())) {
@@ -70,9 +70,9 @@ public class DepartmentController {
 
     @GetMapping("/attendance-records")
     public ResponseEntity<List<AttendanceRecord>> getAttendanceRecords(
-            @RequestParam String department,
-            @RequestParam(required = false) String workingDay,
-            @RequestParam(required = false) Integer weekNumber) {
+            @RequestParam("department") String department,
+            @RequestParam(value = "workingDay", required = false) String workingDay,
+            @RequestParam(value = "weekNumber", required = false) Integer weekNumber) {
         if (workingDay != null && !workingDay.trim().isEmpty() && weekNumber != null) {
             return ResponseEntity.ok(attendanceRecordRepository.findByDepartmentAndWeekNumberAndWorkingDay(department, weekNumber, workingDay));
         } else if (workingDay != null && !workingDay.trim().isEmpty()) {
@@ -84,25 +84,25 @@ public class DepartmentController {
     }
 
     @GetMapping("/leave-requests")
-    public ResponseEntity<List<LeaveRequest>> getLeaveRequests(@RequestParam String department) {
+    public ResponseEntity<List<LeaveRequest>> getLeaveRequests(@RequestParam("department") String department) {
         return ResponseEntity.ok(leaveService.getDepartmentLeaveRequests(department));
     }
 
     @PostMapping("/leave-requests/{id}/approve")
-    public ResponseEntity<?> approveLeave(@PathVariable Long id, @RequestParam String staffName) {
+    public ResponseEntity<?> approveLeave(@PathVariable("id") Long id, @RequestParam("staffName") String staffName) {
         LeaveRequest approved = leaveService.approveLeave(id, staffName);
         return ResponseEntity.ok(Map.of("message", "Leave approved and letter generated successfully", "leave", approved));
     }
 
     @PostMapping("/leave-requests/{id}/reject")
-    public ResponseEntity<?> rejectLeave(@PathVariable Long id, @RequestParam String staffName) {
+    public ResponseEntity<?> rejectLeave(@PathVariable("id") Long id, @RequestParam("staffName") String staffName) {
         LeaveRequest rejected = leaveService.rejectLeave(id, staffName);
         return ResponseEntity.ok(Map.of("message", "Leave request rejected", "leave", rejected));
     }
 
     // Assignment CRUD
     @GetMapping("/assignments")
-    public ResponseEntity<List<Assignment>> getAssignments(@RequestParam String department) {
+    public ResponseEntity<List<Assignment>> getAssignments(@RequestParam("department") String department) {
         return ResponseEntity.ok(assignmentRepository.findByDepartment(department));
     }
 
@@ -122,7 +122,7 @@ public class DepartmentController {
     }
 
     @PutMapping("/assignments/{id}")
-    public ResponseEntity<?> updateAssignment(@PathVariable Long id, @RequestBody AssignmentRequest request) {
+    public ResponseEntity<?> updateAssignment(@PathVariable("id") Long id, @RequestBody AssignmentRequest request) {
         Assignment assignment = assignmentRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Assignment not found"));
 
@@ -135,18 +135,18 @@ public class DepartmentController {
     }
 
     @DeleteMapping("/assignments/{id}")
-    public ResponseEntity<?> deleteAssignment(@PathVariable Long id) {
+    public ResponseEntity<?> deleteAssignment(@PathVariable("id") Long id) {
         assignmentRepository.deleteById(id);
         return ResponseEntity.ok(Map.of("message", "Assignment deleted successfully"));
     }
 
     @GetMapping("/assignments/{assignmentId}/submissions")
-    public ResponseEntity<List<AssignmentSubmission>> getSubmissions(@PathVariable Long assignmentId) {
+    public ResponseEntity<List<AssignmentSubmission>> getSubmissions(@PathVariable("assignmentId") Long assignmentId) {
         return ResponseEntity.ok(submissionRepository.findByAssignmentId(assignmentId));
     }
 
     @PostMapping("/submissions/{submissionId}/grade")
-    public ResponseEntity<?> gradeSubmission(@PathVariable Long submissionId, @RequestBody GradeSubmissionRequest request) {
+    public ResponseEntity<?> gradeSubmission(@PathVariable("submissionId") Long submissionId, @RequestBody GradeSubmissionRequest request) {
         AssignmentSubmission submission = submissionRepository.findById(submissionId)
                 .orElseThrow(() -> new RuntimeException("Submission not found"));
 
@@ -158,7 +158,7 @@ public class DepartmentController {
     }
 
     @GetMapping("/analytics")
-    public ResponseEntity<?> getDepartmentAnalytics(@RequestParam String department) {
+    public ResponseEntity<?> getDepartmentAnalytics(@RequestParam("department") String department) {
         Integer maxCompletedWeek = weeklyAttendanceHistoryRepository.findMaxCompletedWeekNumber();
         Integer currentActiveWeek = maxCompletedWeek + 1;
 

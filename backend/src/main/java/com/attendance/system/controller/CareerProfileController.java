@@ -54,14 +54,14 @@ public class CareerProfileController {
     // ==========================================
 
     @GetMapping("/student/career-profile")
-    public ResponseEntity<?> getStudentCareerProfile(@RequestParam Long studentId) {
+    public ResponseEntity<?> getStudentCareerProfile(@RequestParam("studentId") Long studentId) {
         CareerProfile profile = getOrCreateProfile(studentId);
         return ResponseEntity.ok(toDTO(profile));
     }
 
     @PostMapping("/student/career-profile/resume")
     public ResponseEntity<?> uploadResume(
-            @RequestParam Long studentId,
+            @RequestParam("studentId") Long studentId,
             @RequestParam("file") MultipartFile file) {
 
         if (file.isEmpty()) {
@@ -106,7 +106,7 @@ public class CareerProfileController {
     }
 
     @GetMapping("/student/career-profile/resume/download")
-    public ResponseEntity<?> downloadResume(@RequestParam Long studentId) {
+    public ResponseEntity<?> downloadResume(@RequestParam("studentId") Long studentId) {
         Optional<CareerProfile> profileOpt = careerProfileRepository.findByStudentId(studentId);
         if (profileOpt.isEmpty() || profileOpt.get().getResumeData() == null || profileOpt.get().getResumeData().length == 0) {
             return ResponseEntity.notFound().build();
@@ -122,7 +122,7 @@ public class CareerProfileController {
     }
 
     @DeleteMapping("/student/career-profile/resume")
-    public ResponseEntity<?> deleteResume(@RequestParam Long studentId) {
+    public ResponseEntity<?> deleteResume(@RequestParam("studentId") Long studentId) {
         Optional<CareerProfile> profileOpt = careerProfileRepository.findByStudentId(studentId);
         if (profileOpt.isPresent()) {
             CareerProfile profile = profileOpt.get();
@@ -136,7 +136,7 @@ public class CareerProfileController {
 
     @PutMapping("/student/career-profile/links")
     public ResponseEntity<?> updateLinks(
-            @RequestParam Long studentId,
+            @RequestParam("studentId") Long studentId,
             @RequestBody CareerProfileDTO dto) {
 
         CareerProfile profile = getOrCreateProfile(studentId);
@@ -160,13 +160,13 @@ public class CareerProfileController {
     // ==========================================
 
     @GetMapping("/department/career-profile")
-    public ResponseEntity<?> getDeptStudentCareerProfile(@RequestParam Long studentId) {
+    public ResponseEntity<?> getDeptStudentCareerProfile(@RequestParam("studentId") Long studentId) {
         CareerProfile profile = getOrCreateProfile(studentId);
         return ResponseEntity.ok(toDTO(profile));
     }
 
     @GetMapping("/department/career-profile/resume/download")
-    public ResponseEntity<?> downloadDeptStudentResume(@RequestParam Long studentId) {
+    public ResponseEntity<?> downloadDeptStudentResume(@RequestParam("studentId") Long studentId) {
         return downloadResume(studentId);
     }
 }

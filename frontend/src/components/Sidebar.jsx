@@ -7,7 +7,8 @@ import {
   CheckSquare, 
   BarChart3, 
   LogOut, 
-  GraduationCap
+  GraduationCap,
+  X
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
@@ -32,6 +33,9 @@ export const Sidebar = ({ isOpen, onClose }) => {
           Attendance
           <span>Management</span>
         </div>
+        <button className="sidebar-close-btn" onClick={onClose} aria-label="Close Menu">
+          <X size={20} />
+        </button>
       </div>
 
       <nav className="sidebar-menu">

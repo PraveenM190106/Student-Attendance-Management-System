@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { Menu, X } from 'lucide-react';
 import api from '../services/api';
 import { AttendanceDonutChart, AttendancePieChart, WeeklyAttendanceBarChart } from '../components/AttendanceChart';
 
@@ -7,6 +8,7 @@ const DeptDashboard = () => {
   const navigate = useNavigate();
   const [deptUser, setDeptUser] = useState(null);
   const [activeTab, setActiveTab] = useState('students'); // 'students', 'attendance', 'leave', 'assignments', 'reports'
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   // Data States
   const [students, setStudents] = useState([]);
@@ -238,62 +240,75 @@ const DeptDashboard = () => {
 
   return (
     <div className="app-container">
+      {/* Mobile Backdrop Overlay */}
+      <div 
+        className={`sidebar-backdrop ${sidebarOpen ? 'active' : ''}`}
+        onClick={() => setSidebarOpen(false)} 
+      />
+
       {/* Sidebar */}
-      <div className="sidebar">
+      <div className={`sidebar ${sidebarOpen ? 'open' : ''}`}>
         <div className="sidebar-header">
           <div className="sidebar-logo-icon">🏛️</div>
           <div className="sidebar-brand">
             Dept Portal
             <span>{deptUser?.department || 'Faculty'}</span>
           </div>
+          <button 
+            className="sidebar-close-btn" 
+            onClick={() => setSidebarOpen(false)} 
+            aria-label="Close Menu"
+          >
+            <X size={20} />
+          </button>
         </div>
 
         <div className="sidebar-menu">
           <button 
             className={`sidebar-link ${activeTab === 'pendingStudents' ? 'active' : ''}`}
-            onClick={() => setActiveTab('pendingStudents')}
+            onClick={() => { setActiveTab('pendingStudents'); setSidebarOpen(false); }}
             style={{ background: 'none', border: 'none', width: '100%', textAlign: 'left', cursor: 'pointer' }}
           >
             📋 Pending Student Approvals ({pendingStudents.length})
           </button>
           <button 
             className={`sidebar-link ${activeTab === 'students' ? 'active' : ''}`}
-            onClick={() => setActiveTab('students')}
+            onClick={() => { setActiveTab('students'); setSidebarOpen(false); }}
             style={{ background: 'none', border: 'none', width: '100%', textAlign: 'left', cursor: 'pointer' }}
           >
             👥 Department Students ({students.length})
           </button>
           <button 
             className={`sidebar-link ${activeTab === 'attendance' ? 'active' : ''}`}
-            onClick={() => setActiveTab('attendance')}
+            onClick={() => { setActiveTab('attendance'); setSidebarOpen(false); }}
             style={{ background: 'none', border: 'none', width: '100%', textAlign: 'left', cursor: 'pointer' }}
           >
             📋 Attendance Logs ({attendanceRecords.length})
           </button>
           <button 
             className={`sidebar-link ${activeTab === 'leave' ? 'active' : ''}`}
-            onClick={() => setActiveTab('leave')}
+            onClick={() => { setActiveTab('leave'); setSidebarOpen(false); }}
             style={{ background: 'none', border: 'none', width: '100%', textAlign: 'left', cursor: 'pointer' }}
           >
             📜 Leave Requests ({leaveRequests.filter(l => l.status === 'PENDING').length} Pending)
           </button>
           <button 
             className={`sidebar-link ${activeTab === 'assignments' ? 'active' : ''}`}
-            onClick={() => setActiveTab('assignments')}
+            onClick={() => { setActiveTab('assignments'); setSidebarOpen(false); }}
             style={{ background: 'none', border: 'none', width: '100%', textAlign: 'left', cursor: 'pointer' }}
           >
             📝 Manage Assignments
           </button>
           <button 
             className={`sidebar-link ${activeTab === 'announcements' ? 'active' : ''}`}
-            onClick={() => setActiveTab('announcements')}
+            onClick={() => { setActiveTab('announcements'); setSidebarOpen(false); }}
             style={{ background: 'none', border: 'none', width: '100%', textAlign: 'left', cursor: 'pointer' }}
           >
             📢 Department Announcements ({announcements.length})
           </button>
           <button 
             className={`sidebar-link ${activeTab === 'reports' ? 'active' : ''}`}
-            onClick={() => setActiveTab('reports')}
+            onClick={() => { setActiveTab('reports'); setSidebarOpen(false); }}
             style={{ background: 'none', border: 'none', width: '100%', textAlign: 'left', cursor: 'pointer' }}
           >
             📊 Department Reports
@@ -301,7 +316,11 @@ const DeptDashboard = () => {
         </div>
 
         <div style={{ padding: '20px' }}>
-          <button className="btn btn-danger" style={{ width: '100%' }} onClick={handleLogout}>
+          <button 
+            className="btn btn-danger" 
+            style={{ width: '100%' }} 
+            onClick={() => { setSidebarOpen(false); handleLogout(); }}
+          >
             Logout Faculty
           </button>
         </div>
@@ -310,11 +329,20 @@ const DeptDashboard = () => {
       {/* Main Wrapper */}
       <div className="main-wrapper">
         <div className="navbar">
-          <div>
-            <span style={{ fontWeight: '700', fontSize: '18px' }}>Faculty Staff Dashboard</span>
-            <span style={{ marginLeft: '12px', fontSize: '13px', color: 'var(--text-muted)' }}>
-              ({deptUser?.fullName} - {deptUser?.department})
-            </span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+            <button 
+              className="hamburger-btn" 
+              onClick={() => setSidebarOpen(!sidebarOpen)} 
+              aria-label="Toggle Menu"
+            >
+              <Menu size={22} />
+            </button>
+            <div>
+              <span style={{ fontWeight: '700', fontSize: '18px' }}>Faculty Staff Dashboard</span>
+              <span style={{ marginLeft: '12px', fontSize: '13px', color: 'var(--text-muted)' }}>
+                ({deptUser?.fullName} - {deptUser?.department})
+              </span>
+            </div>
           </div>
         </div>
 

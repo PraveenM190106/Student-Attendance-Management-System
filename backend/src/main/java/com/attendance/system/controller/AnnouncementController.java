@@ -33,7 +33,7 @@ public class AnnouncementController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Announcement>> getAnnouncements(@RequestParam(required = false) String department) {
+    public ResponseEntity<List<Announcement>> getAnnouncements(@RequestParam(value = "department", required = false) String department) {
         if (department != null && !department.trim().isEmpty()) {
             return ResponseEntity.ok(announcementService.getAnnouncementsByDepartment(department));
         }

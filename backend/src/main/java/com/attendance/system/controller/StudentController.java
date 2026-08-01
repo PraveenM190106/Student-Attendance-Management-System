@@ -40,7 +40,7 @@ public class StudentController {
     private AnnouncementService announcementService;
 
     @PostMapping("/verify-face")
-    public ResponseEntity<?> verifyFace(@RequestParam Long studentId, @RequestBody FaceVerificationRequest request) {
+    public ResponseEntity<?> verifyFace(@RequestParam("studentId") Long studentId, @RequestBody FaceVerificationRequest request) {
         User student = userRepository.findById(studentId)
                 .orElseThrow(() -> new RuntimeException("Student not found"));
 
@@ -60,7 +60,10 @@ public class StudentController {
     }
 
     @PostMapping("/mark-attendance")
-    public ResponseEntity<?> markAttendance(@RequestParam Long studentId, @RequestParam String status, @RequestParam(required = false) Long sessionId) {
+    public ResponseEntity<?> markAttendance(
+            @RequestParam("studentId") Long studentId,
+            @RequestParam("status") String status,
+            @RequestParam(value = "sessionId", required = false) Long sessionId) {
         User student = userRepository.findById(studentId)
                 .orElseThrow(() -> new RuntimeException("Student not found"));
 
@@ -69,7 +72,7 @@ public class StudentController {
     }
 
     @PostMapping("/apply-leave")
-    public ResponseEntity<?> applyLeave(@RequestParam Long studentId, @RequestBody LeaveApplicationRequest request) {
+    public ResponseEntity<?> applyLeave(@RequestParam("studentId") Long studentId, @RequestBody LeaveApplicationRequest request) {
         User student = userRepository.findById(studentId)
                 .orElseThrow(() -> new RuntimeException("Student not found"));
 
@@ -78,19 +81,19 @@ public class StudentController {
     }
 
     @GetMapping("/leave-requests")
-    public ResponseEntity<List<LeaveRequest>> getLeaveRequests(@RequestParam Long studentId) {
+    public ResponseEntity<List<LeaveRequest>> getLeaveRequests(@RequestParam("studentId") Long studentId) {
         return ResponseEntity.ok(leaveService.getStudentLeaveRequests(studentId));
     }
 
     @GetMapping("/assignments")
-    public ResponseEntity<List<Assignment>> getAssignments(@RequestParam String department) {
+    public ResponseEntity<List<Assignment>> getAssignments(@RequestParam("department") String department) {
         return ResponseEntity.ok(assignmentRepository.findByDepartment(department));
     }
 
     @PostMapping("/assignments/{assignmentId}/submit")
     public ResponseEntity<?> submitAssignment(
-            @PathVariable Long assignmentId,
-            @RequestParam Long studentId,
+            @PathVariable("assignmentId") Long assignmentId,
+            @RequestParam("studentId") Long studentId,
             @RequestBody Map<String, String> payload) {
 
         User student = userRepository.findById(studentId)
@@ -114,19 +117,19 @@ public class StudentController {
     }
 
     @GetMapping("/assignments/my-submissions")
-    public ResponseEntity<List<AssignmentSubmission>> getMySubmissions(@RequestParam Long studentId) {
+    public ResponseEntity<List<AssignmentSubmission>> getMySubmissions(@RequestParam("studentId") Long studentId) {
         return ResponseEntity.ok(submissionRepository.findByStudentId(studentId));
     }
 
     @GetMapping("/analytics")
-    public ResponseEntity<?> getAnalytics(@RequestParam Long studentId) {
+    public ResponseEntity<?> getAnalytics(@RequestParam("studentId") Long studentId) {
         return ResponseEntity.ok(attendanceService.getStudentAttendanceAnalytics(studentId));
     }
 
     @GetMapping("/notifications")
     public ResponseEntity<?> getNotifications(
-            @RequestParam Long studentId,
-            @RequestParam(required = false) String department) {
+            @RequestParam("studentId") Long studentId,
+            @RequestParam(value = "department", required = false) String department) {
         User student = userRepository.findById(studentId).orElse(null);
         String dept = (department != null && !department.trim().isEmpty()) ? department : (student != null ? student.getDepartment() : "ALL");
 
@@ -153,7 +156,7 @@ public class StudentController {
     }
 
     @GetMapping("/announcements")
-    public ResponseEntity<List<Announcement>> getStudentAnnouncements(@RequestParam(required = false) String department) {
+    public ResponseEntity<List<Announcement>> getStudentAnnouncements(@RequestParam(value = "department", required = false) String department) {
         return ResponseEntity.ok(announcementService.getAnnouncementsByDepartment(department != null ? department : "ALL"));
     }
 }

@@ -1,11 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { Menu, X } from 'lucide-react';
 import api from '../services/api';
 
 const AdminDashboard = () => {
   const navigate = useNavigate();
   const [adminUser, setAdminUser] = useState(null);
   const [activeTab, setActiveTab] = useState('pending'); // 'pending', 'users', 'session'
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  
+  // ... rest of AdminDashboard logic ...
+
 
   // Data states
   const [pendingDepartments, setPendingDepartments] = useState([]);
@@ -180,34 +185,47 @@ const AdminDashboard = () => {
 
   return (
     <div className="app-container">
+      {/* Mobile Backdrop Overlay */}
+      <div 
+        className={`sidebar-backdrop ${sidebarOpen ? 'active' : ''}`}
+        onClick={() => setSidebarOpen(false)} 
+      />
+
       {/* Sidebar */}
-      <div className="sidebar">
+      <div className={`sidebar ${sidebarOpen ? 'open' : ''}`}>
         <div className="sidebar-header">
           <div className="sidebar-logo-icon">🛡️</div>
           <div className="sidebar-brand">
             Admin Portal
             <span>Administrator</span>
           </div>
+          <button 
+            className="sidebar-close-btn" 
+            onClick={() => setSidebarOpen(false)} 
+            aria-label="Close Menu"
+          >
+            <X size={20} />
+          </button>
         </div>
 
         <div className="sidebar-menu">
           <button 
             className={`sidebar-link ${activeTab === 'pending' ? 'active' : ''}`}
-            onClick={() => setActiveTab('pending')}
+            onClick={() => { setActiveTab('pending'); setSidebarOpen(false); }}
             style={{ background: 'none', border: 'none', width: '100%', textAlign: 'left', cursor: 'pointer' }}
           >
             📋 Pending Approvals ({pendingDepartments.length})
           </button>
           <button 
             className={`sidebar-link ${activeTab === 'users' ? 'active' : ''}`}
-            onClick={() => setActiveTab('users')}
+            onClick={() => { setActiveTab('users'); setSidebarOpen(false); }}
             style={{ background: 'none', border: 'none', width: '100%', textAlign: 'left', cursor: 'pointer' }}
           >
             👥 User Management ({allUsers.length})
           </button>
           <button 
             className={`sidebar-link ${activeTab === 'session' ? 'active' : ''}`}
-            onClick={() => setActiveTab('session')}
+            onClick={() => { setActiveTab('session'); setSidebarOpen(false); }}
             style={{ background: 'none', border: 'none', width: '100%', textAlign: 'left', cursor: 'pointer' }}
           >
             ⏱️ Weekly Attendance Control
@@ -215,7 +233,11 @@ const AdminDashboard = () => {
         </div>
 
         <div style={{ padding: '20px' }}>
-          <button className="btn btn-danger" style={{ width: '100%' }} onClick={handleLogout}>
+          <button 
+            className="btn btn-danger" 
+            style={{ width: '100%' }} 
+            onClick={() => { setSidebarOpen(false); handleLogout(); }}
+          >
             Logout Admin
           </button>
         </div>
@@ -224,9 +246,18 @@ const AdminDashboard = () => {
       {/* Main Wrapper */}
       <div className="main-wrapper">
         <div className="navbar">
-          <div>
-            <span style={{ fontWeight: '700', fontSize: '18px' }}>System Administrator Dashboard</span>
-            <span style={{ marginLeft: '12px', fontSize: '13px', color: 'var(--text-muted)' }}>({adminUser?.email})</span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+            <button 
+              className="hamburger-btn" 
+              onClick={() => setSidebarOpen(!sidebarOpen)} 
+              aria-label="Toggle Menu"
+            >
+              <Menu size={22} />
+            </button>
+            <div>
+              <span style={{ fontWeight: '700', fontSize: '18px' }}>System Administrator Dashboard</span>
+              <span style={{ marginLeft: '12px', fontSize: '13px', color: 'var(--text-muted)' }}>({adminUser?.email})</span>
+            </div>
           </div>
           {activeSessionInfo.active && (
             <div className="badge badge-present" style={{ fontSize: '14px', padding: '8px 16px' }}>
